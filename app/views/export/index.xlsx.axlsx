@@ -1,0 +1,25 @@
+wb = xlsx_package.workbook
+xlsx_package.use_shared_strings = true
+wb.styles.add_style alignment: {wrap_text: true}
+
+@params[:sheets].each do |sheet|
+  wb.add_worksheet(name: sheet[:name]) do |worksheet|
+    editable_style = worksheet.styles.add_style(:bg_color => "98FB98", :border => { :style => :thin, color: '000000' })
+    if sheet[:titles]
+      worksheet.add_row sheet[:titles].map(&:humanize).map(&:titleize)
+    end
+    sheet[:rows].each do |row|
+      workrow = worksheet.add_row row[:item]
+
+      if row[:editable_indexes]
+        row[:editable_indexes].each do |index|
+          workrow.cells[index].style = editable_style
+        end
+      end
+    end
+
+    if sheet[:column_widths]
+      worksheet.column_widths *sheet[:column_widths]
+    end
+  end
+end

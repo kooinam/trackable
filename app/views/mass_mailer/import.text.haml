@@ -1,0 +1,9 @@
+- if @success
+  - @params.each do |key, value|
+    %b
+      = value
+      X
+      = key
+    %br
+- else
+  Sorry, something went wrong. Please contact administrator.

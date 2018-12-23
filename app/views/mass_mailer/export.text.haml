@@ -1,0 +1,4 @@
+- @params[:sheets].each do |sheet|
+  %b
+    = "A total of #{sheet[:rows].count} #{sheet[:name]} exported"
+    %br
