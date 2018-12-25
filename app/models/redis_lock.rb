@@ -34,7 +34,22 @@ class RedisLock
       if redis.setnx(key, expire_in)
         return true
       else
-        return false
+        time = redis.get(key)
+
+        if time
+          time = DateTime.parse(time)
+
+          if DateTime.now >= time
+            Rails.logger.error "ALERT REDIS LOCK #{key}"
+            redis.del(key)
+
+            redis.setnx(key, expire_in)
+
+            return true
+          else
+            return false
+          end
+        end
       end
     end
   end
