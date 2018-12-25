@@ -4,7 +4,9 @@ class RedisLock
   def self.get_instance
     redis = Redis.new(url: Rails.application.secrets.redis_url, password: Rails.application.secrets.redis_password)
 
-    self.nsp = Redis::Namespace.new(Rails.application.secrets.redis_namespace, redis: redis)
+    nsp = Redis::Namespace.new(Rails.application.secrets.redis_namespace, redis: redis)
+
+    nsp
   end
 
   def self.lock(key, lock: true, expire: 10)
