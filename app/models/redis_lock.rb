@@ -7,25 +7,33 @@ class RedisLock
     self.nsp = Redis::Namespace.new(Rails.application.secrets.redis_namespace, redis: redis)
   end
 
-  def self.lock(key, expire: 10)
+  def self.lock(key, lock: true, expire: 10)
     redis = self.get_instance
 
     wait_duration = 0.01
     expire_in = DateTime.now + expire.seconds
 
-    while redis.setnx(key, expire_in) == false
-      time = redis.get(key)
+    if lock
+      while redis.setnx(key, expire_in) == false
+        time = redis.get(key)
 
-      if time
-        time = DateTime.parse(time)
+        if time
+          time = DateTime.parse(time)
 
-        if DateTime.now >= time
-          Rails.logger.error "ALERT REDIS LOCK #{key}"
-          redis.del(key)
+          if DateTime.now >= time
+            Rails.logger.error "ALERT REDIS LOCK #{key}"
+            redis.del(key)
+          end
         end
-      end
 
-      sleep wait_duration
+        sleep wait_duration
+      end
+    else
+      if redis.setnx(key, expire_in)
+        return true
+      else
+        return false
+      end
     end
   end
 
