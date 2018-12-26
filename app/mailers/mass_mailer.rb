@@ -6,9 +6,6 @@ class MassMailer < ActionMailer::Base
 
     subject = "#{DateTime.current.prettify} Export #{params[:name]}"
 
-    pp '---'
-    pp '***'
-
     xlsx = render_to_string handlers: [:axlsx], formats: [:xlsx], template: "/export/index", locals: {
       params: @params,
     }, layout: false

@@ -30,6 +30,8 @@ class RedisLock
 
         sleep wait_duration
       end
+
+      true
     else
       if redis.setnx(key, expire_in)
         return true
