@@ -18,7 +18,7 @@ module ReferenceNumber
     'R'
   end
 
-  def generate_order_number(options = {})
+  def assign_reference_number(options = {})
     options[:length]  ||= reference_number_length
     options[:letters] ||= reference_number_letters
     options[:prefix]  ||= reference_number_prefix
