@@ -31,7 +31,7 @@ module ReferenceNumber
       # Make a random number.
       random = "#{options[:prefix]}#{(0...options[:length]).map { possible.sample }.join}"
       # Use the random  number if no other order exists with it.
-      if self.class.exists?(number: random)
+      if self.class.where(reference_number: random).first
         # If over half of all possible options are taken add another digit.
         options[:length] += 1 if self.class.count > (10**options[:length] / 2)
       else
