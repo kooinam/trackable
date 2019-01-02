@@ -9,7 +9,7 @@ class EagerLoader
       relations = arg.to_s.singularize.camelize.constantize.where(:id.in => arg_ids)
       relations = relations.index_by(&:id)
 
-      collection = collection.map do |record|
+      collection.documents = collection.documents.map do |record|
         record.set_relation(arg, relations[record.send(arg_id)])
 
         record
