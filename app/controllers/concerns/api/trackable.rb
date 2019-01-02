@@ -8,36 +8,7 @@ module Api
 
     protected
     def mongoid_ransack(scope)
-      s =  (q_params[:s]) ? q_params[:s][0] : nil
-
-      if s
-        scope = scope.order(s)
-      end
-
-      filters = []
-      q_params.each do |key, value|
-        filters.push(key)
-      end
-      filters.each do |filter|
-        if filter.to_s.include?('.')
-          association_and_field = filter.to_s.split('.')
-          association = association_and_field[0]
-          field = association_and_field[1]
-
-          association_ids = []
-          scope.klass.reflect_on_all_associations(:belongs_to).each do |belongs_to|
-            if belongs_to.name.to_s == association
-              association_ids = belongs_to.class_name.constantize.where("#{field}" => /#{q_params[filter]}/i).map(&:id)
-            end
-          end
-
-          scope = scope.where("#{association}".to_sym.in => association_ids)
-        else
-          if scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == String
-            scope = scope.where("#{filter}" => /#{q_params[filter]}/i)
-          end
-        end
-      end
+      scope = MongoidRansack.ransack(scope, q: q_params)
 
       scope
     end

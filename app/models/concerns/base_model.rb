@@ -5,6 +5,8 @@ module BaseModel
     include Mongoid::Document
     include Mongoid::Timestamps
     include MongoidEnumerable
+
+    include Trackable::Mass
   end
 
   class_methods do
