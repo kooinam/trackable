@@ -3,7 +3,7 @@ class EagerLoader
 
   def self.load(collection, *args)
     eager_loader = EagerLoader.new
-    eager_loader.all = []
+    eager_loader.all = collection.documents
     eager_loader.total_count = collection.try(:total_count)
 
     args.each do |arg|
@@ -15,7 +15,7 @@ class EagerLoader
       relations = arg.to_s.singularize.camelize.constantize.where(:id.in => arg_ids)
       relations = relations.index_by(&:id)
 
-      eager_loader.all = collection.map do |record|
+      eager_loader.all = eager_loader.map do |record|
         record.set_relation(arg, relations[record.send(arg_id)])
 
         record
