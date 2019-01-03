@@ -28,8 +28,32 @@ class MongoidRansack
       else
         if scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == String
           scope = scope.where("#{filter}" => /#{q[filter]}/i)
+        elsif filter.to_s.include? '_gteq'
+          scope = self.filter_gteq(scope, filter, q[filter])
+        elsif filter.to_s.include? '_lteq'
+          scope = self.filter_lteq(scope, filter, q[filter])
         end
       end
+    end
+
+    scope
+  end
+
+  def self.filter_gteq(scope, filter, value)
+    filter = filter.to_s.gsub('_gteq', '')
+
+    if scope.klass.fields.keys.include? filter and (scope.klass.fields[filter].type == Time or scope.klass.fields[filter].type == DateTime)
+      scope = scope.where(filter.to_sym.gte => value)
+    end
+
+    scope
+  end
+
+  def self.filter_lteq(scope, filter, value)
+    filter = filter.to_s.gsub('_lteq', '')
+
+    if scope.klass.fields.keys.include? filter and (scope.klass.fields[filter].type == Time or scope.klass.fields[filter].type == DateTime)
+      scope = scope.where(filter.to_sym.lte => value)
     end
 
     scope
