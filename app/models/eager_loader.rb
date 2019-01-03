@@ -24,4 +24,12 @@ class EagerLoader
 
     eager_loader
   end
+
+  def each(&proc)
+    @all.each(&proc)
+  end
+
+  def map(&proc)
+    @all.map(&proc)
+  end
 end
