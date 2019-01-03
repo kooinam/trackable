@@ -3,7 +3,7 @@ class EagerLoader
 
   def self.load(collection, *args)
     eager_loader = EagerLoader.new
-    eager_loader.all = collection.documents
+    eager_loader.all = collection.to_a
     eager_loader.total_count = collection.try(:total_count)
 
     args.each do |arg|
