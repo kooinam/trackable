@@ -4,7 +4,7 @@ class EagerLoader
   def self.load(collection, *args)
     eager_loader = EagerLoader.new
     eager_loader.all = []
-    eager_loader.total_count = collection.total_count
+    eager_loader.total_count = collection.try(:total_count)
 
     args.each do |arg|
       arg_id = "#{arg}_id".to_sym
