@@ -34,6 +34,7 @@ module Api
       res = params[symbol]
       if res.is_a? String
         res = JSON.parse(res)
+        res = HashWithIndifferentAccess.new(res)
       end
 
       res || {}
