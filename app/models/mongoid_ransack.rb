@@ -43,7 +43,7 @@ class MongoidRansack
     filter = filter.to_s.gsub('_gteq', '')
 
     if scope.klass.fields.keys.include? filter and (scope.klass.fields[filter].type == Time or scope.klass.fields[filter].type == DateTime)
-      scope = scope.where(filter.to_sym.gte => DateTime.parse(value).beginning_of_day)
+      scope = scope.where(filter.to_sym.gte => Time.zone.parse(value).beginning_of_day)
     end
 
     scope
@@ -53,7 +53,7 @@ class MongoidRansack
     filter = filter.to_s.gsub('_lteq', '')
 
     if scope.klass.fields.keys.include? filter and (scope.klass.fields[filter].type == Time or scope.klass.fields[filter].type == DateTime)
-      scope = scope.where(filter.to_sym.lte => DateTime.parse(value).end_of_day)
+      scope = scope.where(filter.to_sym.lte => Time.zone.parse(value).end_of_day)
     end
 
     scope
