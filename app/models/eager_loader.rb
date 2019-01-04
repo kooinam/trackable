@@ -5,6 +5,7 @@ class EagerLoader
     eager_loader = EagerLoader.new
     eager_loader.all = collection.to_a
     eager_loader.total_count = collection.try(:total_count)
+    eager_loader.total_pages = collection.try(:total_pages)
 
     args.each do |arg|
       if arg.is_a? Hash
