@@ -1,5 +1,5 @@
 class EagerLoader
-  attr_accessor :all, :total_count
+  attr_accessor :all, :total_count, :total_pages
 
   def self.load(collection, *args)
     eager_loader = EagerLoader.new
