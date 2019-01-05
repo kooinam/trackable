@@ -7,6 +7,37 @@ module Api
     end
 
     protected
+    def invalid_resource!(resource)
+      Rails.logger.error "invalid_resouce_errors=#{resource.errors.full_messages}"
+      @resource = resource
+      render json: {
+        errors: resource.errors.to_hash
+      }, status: 422
+    end
+
+    def unauthorized
+      render json: { error: 'Unauthorized' }, status: 401
+    end
+
+    def access_denied
+      render json: { error: 'Access Denied' }, status: 403
+    end
+
+    def render_not_found
+      render json: {
+        errors: {
+          base: ['Not found']
+        },
+      }, status: 404
+    end
+
+    def render_not_found(item)
+      @item = item
+      @camelize = true
+
+      render 'api/not_found', status: 404
+    end
+
     def mongoid_ransack(scope)
       scope = MongoidRansack.ransack(scope, q: q_params)
 
