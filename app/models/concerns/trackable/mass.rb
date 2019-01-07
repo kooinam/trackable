@@ -79,6 +79,7 @@ module Trackable::Mass
           pp '---'
 
           MassMailer.import(false, user_email, params).deliver
+          AdminMailer.sidekiq_error(e).deliver
         end
       end
     end
