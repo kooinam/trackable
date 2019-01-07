@@ -1,4 +1,6 @@
 require 'haml'
+require 'carrierwave/mongoid'
+require 'fog-aws'
 
 module Trackable
   class Engine < ::Rails::Engine
@@ -11,7 +13,7 @@ module Trackable
       def activate
         cache = Rails.application.config.cache_classes
 
-        ['app', 'lib'].each do |dir|
+        ['lib'].each do |dir|
           file = File.join(File.dirname(__FILE__), "../../#{dir}/**/*.rb")
 
           Dir.glob(file) do |c|

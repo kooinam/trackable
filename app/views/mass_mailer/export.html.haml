@@ -2,3 +2,25 @@
   %b
     = "A total of #{sheet[:rows].count} #{sheet[:name]} exported"
     %br
+
+
+- if @params[:editable]
+  %ul
+    %li
+      %b
+        Change
+        %i
+          Import?
+        column to
+        %i
+          UPDATE
+        to update that item.
+    %li
+      %b
+        Change
+        %i
+          Import?
+        column to
+        %i
+          CREATE
+        to update that item or create when item is not found.

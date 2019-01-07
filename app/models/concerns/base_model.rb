@@ -44,4 +44,13 @@ module BaseModel
       end
     end
   end
+
+  protected
+  def get_attachment(attachment_id, original_attachment = nil)
+    attachment_id = attachment_id
+    attachment = Attachment.find(attachment_id)
+    attachment.update(key: original_attachment.try(&:key))
+
+    attachment
+  end
 end

@@ -19,17 +19,17 @@ class MassMailer < ActionMailer::Base
     mail(to: email, subject: subject, from: SettingsManager.singleton.sender_email, bcc: SettingsManager.singleton.bcc_email)
   end
 
-  # def import(success, user, params)
-  #   @success = success
-  #   @params = params
+  def import(success, email, params)
+    @success = success
+    @params = params
 
-  #   subject = nil
-  #   if success
-  #     subject = 'Import Successfully'
-  #   else
-  #     subject = 'Failed to Import'
-  #   end
+    subject = nil
+    if success
+      subject = 'Import Successfully'
+    else
+      subject = 'Failed to Import'
+    end
 
-  #   mail(to: user.email, subject: subject, from: SettingsManager.singleton.sender_email, bcc: SettingsManager.singleton.bcc_email)
-  # end
+    mail(to: email, subject: subject, from: SettingsManager.singleton.sender_email, bcc: SettingsManager.singleton.bcc_email)
+  end
 end
