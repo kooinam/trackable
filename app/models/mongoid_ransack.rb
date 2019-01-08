@@ -30,9 +30,9 @@ class MongoidRansack
           scope = scope.where("#{filter}" => /#{q[filter]}/i)
         elsif scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == Mongoid::Boolean
           if q[filter] == 'true'
-            scope = scope.where("#{filter}", true)
+            scope = scope.where("#{filter}" => true)
           elsif q[filter] == 'false'
-            scope = scope.where("#{filter}", false)
+            scope = scope.where("#{filter}" => false)
           end
         elsif filter.to_s.include? '_gteq'
           scope = self.filter_gteq(scope, filter, q[filter])
