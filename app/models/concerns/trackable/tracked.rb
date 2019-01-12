@@ -36,7 +36,7 @@ module Trackable::Tracked
 
   private
   def assign_track_time
-    tracked_at = self.created_at
+    tracked_at = self.created_at || DateTime.now
 
     self.tracked_day = tracked_at.day
     self.tracked_weekday = tracked_at.wday
