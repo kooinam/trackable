@@ -41,6 +41,6 @@ module Trackable::Tracked
     self.tracked_day = tracked_at.day
     self.tracked_weekday = tracked_at.wday
     self.tracked_hour = tracked_at.hour
-    self.tracked_minute = tracked_at.minute
+    self.tracked_minute = tracked_at.min
   end
 end
