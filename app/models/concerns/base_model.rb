@@ -7,6 +7,12 @@ module BaseModel
     include MongoidEnumerable
 
     include Trackable::Mass
+
+    index({
+      created_at: 1,
+    }, {
+      background: true
+    })
   end
 
   class_methods do
@@ -44,12 +50,6 @@ module BaseModel
       end
     end
   end
-
-  index({
-    created_at: 1,
-  }, {
-    background: true
-  })
 
   protected
   def get_attachment(attachment_id, original_attachment = nil)

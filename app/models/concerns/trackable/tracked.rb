@@ -1,36 +1,38 @@
-module Tracked
+module Trackable::Tracked
   extend ActiveSupport::Concern
 
-  field :tracked_day, type: Integer
-  field :tracked_weekday, type: Integer
-  field :tracked_hour, type: Integer
-  field :tracked_minute, type: Integer
+  included do
+    field :tracked_day, type: Integer
+    field :tracked_weekday, type: Integer
+    field :tracked_hour, type: Integer
+    field :tracked_minute, type: Integer
 
-  index({
-    tracked_day: 1,
-  }, {
-    background: true
-  })
+    index({
+      tracked_day: 1,
+    }, {
+      background: true
+    })
 
-  index({
-    tracked_weekday: 1,
-  }, {
-    background: true
-  })
+    index({
+      tracked_weekday: 1,
+    }, {
+      background: true
+    })
 
-  index({
-    tracked_hour: 1,
-  }, {
-    background: true
-  })
+    index({
+      tracked_hour: 1,
+    }, {
+      background: true
+    })
 
-  index({
-    tracked_minute: 1,
-  }, {
-    background: true
-  })
+    index({
+      tracked_minute: 1,
+    }, {
+      background: true
+    })
 
-  before_save :assign_track_time
+    before_save :assign_track_time
+  end
 
   private
   def assign_track_time
