@@ -1,5 +1,6 @@
 class AdminMailer < ApplicationMailer
-  def sidekiq_error(exception)
+  def sidekiq_error(exception, context = nil)
+    @context = context
     @exception = exception
 
     subject = "Sidekiq Error - #{@exception}"
