@@ -26,7 +26,9 @@ class MongoidRansack
 
         scope = scope.where("#{association}".to_sym.in => association_ids)
       else
-        if scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == String
+        if scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == Object
+          scope = scope.where("#{filter}" => q[filter])
+        elsif scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == String
           scope = scope.where("#{filter}" => /#{q[filter]}/i)
         elsif scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == Mongoid::Boolean
           if q[filter] == 'true'
