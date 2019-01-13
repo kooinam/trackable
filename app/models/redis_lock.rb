@@ -20,9 +20,15 @@ class RedisLock
         time = redis.get(key)
 
         if time
-          time = DateTime.parse(time)
+          begin
+            time = DateTime.parse(time)
+          rescue e
+            DevMessage.track('Redis LOCK Error #{time}', 'REDIS LOCK ERROR', important: true)
+          end
 
           if DateTime.now >= time
+            DevMessage.track('Redis LOCK LOCKED #{key}', 'REDIS', important: true)
+
             Rails.logger.error "ALERT REDIS LOCK #{key}"
             redis.del(key)
           end
