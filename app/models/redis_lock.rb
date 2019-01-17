@@ -10,6 +10,7 @@ class RedisLock
   end
 
   def self.lock(key, lock: true, expire: 10)
+    start_at = DateTime.now
     redis = self.get_instance
 
     wait_duration = 0.01
@@ -27,7 +28,7 @@ class RedisLock
           end
 
           if DateTime.now >= time
-            DevMessage.track("Redis LOCK LOCKED #{key}", 'REDIS', important: true)
+            DevMessage.track("Redis LOCK LOCKED #{key} #{start_at} #{time}", 'REDIS', important: true)
 
             Rails.logger.error "ALERT REDIS LOCK #{key}"
             redis.del(key)
