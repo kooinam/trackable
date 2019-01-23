@@ -58,7 +58,9 @@ class BackgroundJob
     if background_jobs.count > 0
       resultable = Resultable.new
       resultable.message = "#{background_jobs.count} BackgroundJob expired!!!"
-      resultable.parameters[:background_job_ids] = background_jobs.map(&:id).join(', ')
+      resultable.parameters[:background_job_ids] = background_jobs.map do |background_job|
+        "#{background_job.klass} - #{background_job.record_id}"
+      end.join(', ')
 
       AdminMailer.delay.resultable_error(resultable)
     end
