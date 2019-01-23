@@ -61,9 +61,6 @@ class RedisLock
           end
 
           if DateTime.now >= time
-            DevMessage.track("Redis LOCK LOCKED #{key} #{start_at} #{time}", 'REDIS', important: true)
-
-            Rails.logger.error "ALERT REDIS LOCK #{key}"
             redis.del(key)
 
             redis.setnx(key, expire_in)
