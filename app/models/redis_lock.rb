@@ -53,7 +53,7 @@ class RedisLock
           time = nil
 
           begin
-            time = DateTime.parse(time)
+            time = DateTime.parse(value)
           rescue Exception => e
             time = DateTime.now
 

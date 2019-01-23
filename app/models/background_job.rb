@@ -72,7 +72,9 @@ class BackgroundJob
             RedisLock.unlock(key)
           end
 
-          background_job.enqueue_to_sidekiq
+          if background_job.errors.empty?
+            background_job.enqueue_to_sidekiq
+          end
         end
 
         RedisLock.unlock(key)
