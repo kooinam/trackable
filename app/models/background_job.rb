@@ -99,6 +99,8 @@ class BackgroundJob
       end
 
       background_job.destroy
+    else
+      raise
     end
   end
 
