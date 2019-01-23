@@ -26,6 +26,8 @@ class RedisLock
           begin
             time = DateTime.parse(value)
           rescue Exception => e
+            time = DateTime.now
+
             DevMessage.track("Redis LOCK Error #{value} #{key} #{e}", 'REDIS LOCK ERROR', important: true)
           end
 
@@ -53,6 +55,8 @@ class RedisLock
           begin
             time = DateTime.parse(time)
           rescue Exception => e
+            time = DateTime.now
+
             DevMessage.track("Redis LOCK Error #{value} #{key} #{e}", 'REDIS LOCK ERROR', important: true)
           end
 
