@@ -42,9 +42,15 @@ class BackgroundJob
     background: true,
   })
 
+  index({
+    runned_at: 1,
+  }, {
+    background: true,
+  })
+
   validates_presence_of :klass, :action, :record_id
 
-  def self.cleanup
+  def self.cleanup(delete = false)
     expiration = DateTime.now
 
     background_jobs = BackgroundJob.where(:expire_at.lte => expiration)
@@ -55,6 +61,10 @@ class BackgroundJob
       resultable.parameters[:background_job_ids] = background_jobs.map(&:id).join(', ')
 
       AdminMailer.delay.resultable_error(resultable)
+    end
+
+    if delete
+      background_jobs.delete_all
     end
   end
 
