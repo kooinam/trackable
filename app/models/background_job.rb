@@ -72,6 +72,10 @@ class BackgroundJob
         background_job.enqueue_to_sidekiq
       end
     end
+
+    BackgroundJob.where(:created_at.lte => (DateTime.now - 10.seconds), job_id: nil).each do |background_job|
+      background_job.destroy
+    end
   end
 
   def self.enqueue(klass, action, record_id = 0, delay: nil, queue: 'default', running: false, execute_now: false)
