@@ -6,9 +6,11 @@ class BackgroundJob
   field :record_id, type: String
   field :enqueued_at, type: DateTime
   field :delay, type: Integer
-  field :tolerance, type: Integer, default: 3
+  field :expire_at, type: DateTime
   field :running, type: Boolean, default: false
   field :runned_at, type: DateTime
+  field :job_id, type: String
+  field :queue, type: String
 
   index({
     klass: 1,
@@ -35,81 +37,51 @@ class BackgroundJob
   })
 
   index({
-    runned_at: 1,
+    expire_at: 1,
   }, {
     background: true,
   })
 
   validates_presence_of :klass, :action, :record_id, :enqueued_at
 
-  def self.enqueue(klass, action, record_id = 0, delay: nil, queue: nil, tolerance: 3, running: false, execute_now: false, notify: nil)
-    AwryThread.new execute_now: execute_now do
-      has_enqueued = false
+  def self.cleanup
+    expiration = DateTime.now
 
-      key = "background-job-#{klass}-#{action}-#{record_id}"
+    background_jobs = BackgroundJob.where(:expire_at.lte => expiration)
+
+    if background_jobs.count > 0
+      resultable = Resultable.new
+      resultable.message = "#{background_jobs.count} BackgroundJob expired!!!"
+      resultable.parameters[:background_job_ids] = background_jobs.map(&:id).join(', ')
+
+      AdminMailer.delay.resultable_error(resultable)
+    end
+  end
+
+  def self.enqueue(klass, action, record_id = 0, delay: nil, queue: 'default', running: false, execute_now: false)
+    AwryThread.new execute_now: execute_now do
+      key = "background-job-#{klass.to_s}-#{action}-#{record_id}"
 
       if RedisLock.lock(key, lock: false)
-        background_jobs = self.grab_all(klass, action, record_id, running: running).map do |background_job|
-          if background_job.expired?
-            nil
-          else
-            background_job
-          end
-        end.compact
+        background_jobs = self.grab_all(klass.to_s, action, record_id, running: running)
 
         if background_jobs.empty?
-          has_enqueued = true
-
-          background_job = BackgroundJob.create(klass: klass.to_s, action: action, record_id: record_id, enqueued_at: DateTime.now, delay: nil, tolerance: tolerance)
+          background_job = BackgroundJob.create(klass: klass.to_s, action: action, record_id: record_id, delay: delay, queue: queue)
 
           if Rails.env.test?
             RedisLock.unlock(key)
           end
 
-          klass_delay = nil
-
-          if delay
-            if queue
-              klass_delay = self.delay_for(delay.seconds, queue: queue)
-            else
-              klass_delay = self.delay_for(delay.seconds)
-            end
-          else
-            if queue
-              klass_delay = self.delay(queue: queue)
-            else
-              klass_delay = self.delay
-            end
-          end
-
-          klass_delay.execute(background_job.id, klass.to_s, action.to_s, record_id)
+          background_job.enqueue_to_sidekiq
         end
 
         RedisLock.unlock(key)
       end
-
-      if notify == :executed
-        if has_enqueued
-          resultable = Resultable.new
-          resultable.message = "#{klass.to_s} - #{action} - #{record_id} executed"
-
-          AdminMailer.delay.resultable_error(resultable)
-        end
-      elsif notify == :unexecute
-        if has_enqueued == false
-          resultable = Resultable.new
-          resultable.message = "#{klass.to_s} - #{action} - #{record_id} not executed"
-
-          AdminMailer.delay.resultable_error(resultable)
-        end
-      end
-
-      has_enqueued
     end
   end
 
   def self.grab_all(klass, action, record_id = 0, running: false)
-    self.where(klass: klass.to_s, action: action, record_id: record_id, running: running)
+    self.where(klass: klass, action: action, record_id: record_id, running: running)
   end
 
   def self.execute(background_job_id, klass = nil, action = nil, record_id = nil)
@@ -130,21 +102,31 @@ class BackgroundJob
     end
   end
 
-  def expired?
-    expired_at = self.enqueued_at
+  def enqueue_to_sidekiq
+    klass_delay = nil
 
     if self.delay
-      expired_at += self.delay.seconds
-    end
-
-    if self.tolerance
-      expired_at += self.tolerance.seconds
-    end
-
-    if DateTime.now >= expired_at
-      true
+      if self.queue
+        klass_delay = BackgroundJob.delay_for(self.delay.seconds, queue: self.queue)
+      else
+        klass_delay = BackgroundJob.delay_for(self.delay.seconds)
+      end
     else
-      false
+      if self.queue
+        klass_delay = BackgroundJob.delay(queue: self.queue)
+      else
+        klass_delay = BackgroundJob.delay
+      end
+    end
+
+    job_id = klass_delay.execute(self.id, self.klass, self.action.to_s, self.record_id)
+
+    if job_id
+      delay = self.delay || 0
+      enqueued_at = DateTime.now
+      expire_at = enqueued_at + delay.seconds + 10.seconds
+
+      self.update(job_id: job_id, enqueued_at: enqueued_at, expire_at: expire_at)
     end
   end
 end

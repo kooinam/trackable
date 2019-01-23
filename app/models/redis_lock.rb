@@ -18,13 +18,15 @@ class RedisLock
 
     if lock
       while redis.setnx(key, expire_in) == false
-        time = redis.get(key)
+        value = redis.get(key)
 
-        if time
+        if value
+          time = nil
+
           begin
-            time = DateTime.parse(time)
-          rescue e
-            DevMessage.track("Redis LOCK Error #{time} #{key}", 'REDIS LOCK ERROR', important: true)
+            time = DateTime.parse(value)
+          rescue Exception => e
+            DevMessage.track("Redis LOCK Error #{value} #{key} #{e}", 'REDIS LOCK ERROR', important: true)
           end
 
           if DateTime.now >= time
@@ -43,12 +45,20 @@ class RedisLock
       if redis.setnx(key, expire_in)
         return true
       else
-        time = redis.get(key)
+        value = redis.get(key)
 
-        if time
-          time = DateTime.parse(time)
+        if value
+          time = nil
+
+          begin
+            time = DateTime.parse(time)
+          rescue Exception => e
+            DevMessage.track("Redis LOCK Error #{value} #{key} #{e}", 'REDIS LOCK ERROR', important: true)
+          end
 
           if DateTime.now >= time
+            DevMessage.track("Redis LOCK LOCKED #{key} #{start_at} #{time}", 'REDIS', important: true)
+
             Rails.logger.error "ALERT REDIS LOCK #{key}"
             redis.del(key)
 
