@@ -119,7 +119,7 @@ class BackgroundJob
       end
     end
 
-    job_id = klass_delay.execute(self.id, self.klass, self.action.to_s, self.record_id)
+    job_id = klass_delay.execute(self.id.to_s, self.klass, self.action.to_s, self.record_id)
 
     if job_id
       delay = self.delay || 0
