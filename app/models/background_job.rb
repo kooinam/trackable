@@ -42,7 +42,7 @@ class BackgroundJob
     background: true,
   })
 
-  validates_presence_of :klass, :action, :record_id, :enqueued_at
+  validates_presence_of :klass, :action, :record_id
 
   def self.cleanup
     expiration = DateTime.now
@@ -66,7 +66,7 @@ class BackgroundJob
         background_jobs = self.grab_all(klass.to_s, action, record_id, running: running)
 
         if background_jobs.empty?
-          background_job = BackgroundJob.create(klass: klass.to_s, action: action, record_id: record_id, delay: delay, queue: queue)
+          background_job = BackgroundJob.create!(klass: klass.to_s, action: action, record_id: record_id, delay: delay, queue: queue)
 
           if Rails.env.test?
             RedisLock.unlock(key)
@@ -128,7 +128,7 @@ class BackgroundJob
       enqueued_at = DateTime.now
       expire_at = enqueued_at + delay.seconds + 10.seconds
 
-      self.update(job_id: job_id, enqueued_at: enqueued_at, expire_at: expire_at)
+      self.update!(job_id: job_id, enqueued_at: enqueued_at, expire_at: expire_at)
     end
   end
 end
