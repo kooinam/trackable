@@ -65,6 +65,10 @@ class BackgroundJob
 
     if delete
       background_jobs.delete_all
+    else
+      background_jobs.each do |background_job|
+        background_job.enqueue_to_sidekiq
+      end
     end
   end
 
