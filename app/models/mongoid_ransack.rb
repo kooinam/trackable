@@ -12,6 +12,8 @@ class MongoidRansack
     end
 
     filters.each do |filter|
+      Mongoid.logger.level = Logger::INFO
+
       if filter.to_s.include?('.')
         association_and_field = filter.to_s.split('.')
         association = association_and_field[0]
@@ -28,8 +30,10 @@ class MongoidRansack
       else
         if scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == Object
           scope = scope.where("#{filter}" => q[filter])
-        elsif scope.klass.fields.keys.include? filter and (scope.klass.fields[filter].type == String or filter == 'id')
+        elsif scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == String
           scope = scope.where("#{filter}" => /#{q[filter]}/i)
+        elsif (filter == 'id') and (q[filter].blank? == false)
+          scope = scope.where(id: q[filter])
         elsif scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == Mongoid::Boolean
           if q[filter] == 'true'
             scope = scope.where("#{filter}" => true)
