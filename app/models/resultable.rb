@@ -1,5 +1,5 @@
 class Resultable
-  attr_accessor :errors, :parameters, :message
+  attr_accessor :errors, :parameters, :message, :results
 
   def initialize
     self.errors = {}
