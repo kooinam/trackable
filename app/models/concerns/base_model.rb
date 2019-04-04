@@ -51,6 +51,10 @@ module BaseModel
     end
   end
 
+  def queue_to_sidekiq(worker, task)
+    worker.perform_async(self.class.to_s, self.id.to_s, task)
+  end
+
   protected
   def get_attachment(attachment_id, original_attachment = nil)
     attachment_id = attachment_id
