@@ -8,7 +8,7 @@ class Resultable
 
   def add_error(key, value)
     self.errors[key] ||= []
-    self.errors[key].add(value)
+    self.errors[key].push(value)
   end
 
   def success?
