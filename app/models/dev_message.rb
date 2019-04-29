@@ -16,4 +16,18 @@ class DevMessage
   def self.cleanup
     self.where(:created_at.lte => (DateTime.now - 5.minutes)).destroy_all
   end
+
+  def self.benchmark(label, alarm_threshold, &block)
+    started_at = Time.now
+
+    block.call
+
+    finished_at = Time.now
+    elapsed = (finished_at - started_at)
+    if elapsed > alarm_threshold
+      # sidekiq job took more than threshold
+      Rails.logger.error("#{label} TOOK --- [#{elapsed}]")
+      DevMessage.track("#{label} TOOK --- [#{elapsed}]", 'BENCHMARK', important: true)
+    end
+  end
 end
