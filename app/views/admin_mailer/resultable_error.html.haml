@@ -3,6 +3,6 @@
 %br
 
 - if @resultable.parameters[:messages]
-  = @resultable.parameters[:messages].each do |message|
+  - @resultable.parameters[:messages].each do |message|
     = message
     %br
