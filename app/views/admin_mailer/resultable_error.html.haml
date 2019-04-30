@@ -1,2 +1,7 @@
 = @resultable.errors
-= @resultable.parameters
+
+%br
+
+= @resultable.parameters[:messages].each do |message|
+  = message
+  %br
