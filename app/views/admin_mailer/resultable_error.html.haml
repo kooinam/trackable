@@ -2,6 +2,7 @@
 
 %br
 
-= @resultable.parameters[:messages].each do |message|
-  = message
-  %br
+- if resultable.parameters[:messages]
+  = @resultable.parameters[:messages].each do |message|
+    = message
+    %br
