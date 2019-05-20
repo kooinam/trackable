@@ -20,7 +20,7 @@ class DevMessage
   def self.benchmark(label, alarm_threshold, &block)
     started_at = Time.now
 
-    block.call
+    res = block.call
 
     finished_at = Time.now
     elapsed = (finished_at - started_at)
@@ -29,5 +29,7 @@ class DevMessage
       Rails.logger.error("#{label} TOOK --- [#{elapsed}]")
       DevMessage.track("#{label} TOOK --- [#{elapsed}]", 'BENCHMARK', important: true)
     end
+
+    res
   end
 end
