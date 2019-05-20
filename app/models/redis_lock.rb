@@ -73,7 +73,7 @@ class RedisLock
       end
     end
 
-    redis.close
+    redis.redis.close
   end
 
   def self.unlock(key)
@@ -81,6 +81,6 @@ class RedisLock
 
     redis.del(key)
 
-    redis.close
+    redis.redis.close
   end
 end
