@@ -10,6 +10,7 @@ class RedisLock
   end
 
   def self.lock(key, lock: true, expire: 10)
+    res = false
     start_at = DateTime.now
     redis = self.get_instance
 
@@ -42,10 +43,10 @@ class RedisLock
         sleep wait_duration
       end
 
-      true
+      res = true
     else
       if redis.setnx(key, expire_in)
-        return true
+        res = true
       else
         value = redis.get(key)
 
@@ -65,15 +66,17 @@ class RedisLock
 
             redis.setnx(key, expire_in)
 
-            return true
+            res = true
           else
-            return false
+            res = false
           end
         end
       end
     end
 
     redis.redis.close
+
+    res
   end
 
   def self.unlock(key)
