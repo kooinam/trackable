@@ -72,11 +72,15 @@ class RedisLock
         end
       end
     end
+
+    redis.close
   end
 
   def self.unlock(key)
     redis = self.get_instance
 
     redis.del(key)
+
+    redis.close
   end
 end
