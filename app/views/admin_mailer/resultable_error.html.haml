@@ -2,7 +2,10 @@
 
 %br
 
-- if @resultable.parameters[:messages]
-  - @resultable.parameters[:messages].each do |message|
-    = message
+- if @resultable.parameters
+  - @resultable.parameters.each do |key, message|
+    %h2
+      = key
+    %p
+      = message
     %br

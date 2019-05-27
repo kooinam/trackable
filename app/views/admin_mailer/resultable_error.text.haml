@@ -1,2 +1,11 @@
 = @resultable.errors
-= @resultable.parameters
+
+%br
+
+- if @resultable.parameters
+  - @resultable.parameters.each do |key, message|
+    %h2
+      = key
+    %p
+      = message
+    %br
