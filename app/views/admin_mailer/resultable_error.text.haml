@@ -7,5 +7,9 @@
     %h2
       = key
     %p
-      = message
+      - if message.is_a? Array
+        - message.each do |m|
+          = m
+      - else
+        = message
     %br
