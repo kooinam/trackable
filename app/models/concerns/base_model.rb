@@ -64,12 +64,6 @@ module BaseModel
     end
   end
 
-  def logo_attachment_id=(value)
-    self.image_attachment = get_attachment(value, self.image_attachment)
-  end
-    end
-  end
-
   def queue_to_sidekiq(worker, task)
     worker.perform_async(self.class.to_s, self.id.to_s, task)
   end
