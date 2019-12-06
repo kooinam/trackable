@@ -30,7 +30,7 @@ class ImageAttachmentUploader < CarrierWave::Uploader::Base
     # ActionController::Base.helpers.asset_path("fallback/" + [version_name, "default.png"].compact.join('_'))
 
     # "/images/fallback/" + [version_name, "default.png"].compact.join('_')
-    'https://s3-ap-southeast-1.amazonaws.com/sg-toro-development/placeholder.png'
+    "https://kingmakergames-public.s3-ap-southeast-1.amazonaws.com/assets/static/#{version_name}_placeholder.png"
   end
 
   # Process files as they are uploaded:
