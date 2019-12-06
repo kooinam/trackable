@@ -55,11 +55,11 @@ module BaseModel
       alias_method "old_#{attachment_type.to_s}".to_sym, attachment_type
 
       define_method attachment_type do
-        self.send("old_#{attachment_type.to_s}".to_sym) or self.send("build_#{attachment_type}".to_sym)
+        self.send("old_#{attachment_type.to_s}".to_sym) or self.send("build_#{attachment_type}".to_sym))
       end
 
       define_method "#{attachment_name.to_s}=".to_sym do |value|
-        self.send("#{attachment_type.to_s}=".to_sym, get_attachment(value, self.send(attachment_type))
+        self.send("#{attachment_type.to_s}=".to_sym, get_attachment(value, self.send(attachment_type)))
       end
     end
   end
