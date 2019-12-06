@@ -49,6 +49,25 @@ module BaseModel
         associations
       end
     end
+
+    def has_attachment(attachment_type, attachment_name)
+      has_one attachment_name, as: :attachmentable, autosave: true, dependent: :destroy
+      alias_method "old_#{attachment_type.to_s}".to_sym, attachment_type
+
+      define_method attachment_type do
+        self.send("old_#{attachment_type.to_s}".to_sym) or self.send("build_#{attachment_type}".to_sym)
+      end
+
+      define_method "#{attachment_name.to_s}=".to_sym do |value|
+        self.send("#{attachment_type.to_s}=".to_sym, get_attachment(value, self.send(attachment_type))
+      end
+    end
+  end
+
+  def logo_attachment_id=(value)
+    self.image_attachment = get_attachment(value, self.image_attachment)
+  end
+    end
   end
 
   def queue_to_sidekiq(worker, task)
