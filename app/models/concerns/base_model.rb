@@ -51,7 +51,7 @@ module BaseModel
     end
 
     def has_attachment(attachment_type, attachment_name)
-      has_one attachment_name, as: :attachmentable, autosave: true, dependent: :destroy
+      has_one attachment_type, as: :attachmentable, autosave: true, dependent: :destroy
       alias_method "old_#{attachment_type.to_s}".to_sym, attachment_type
 
       define_method attachment_type do
