@@ -30,6 +30,8 @@ class MongoidRansack
       else
         if scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == Object
           scope = scope.where("#{filter}" => q[filter])
+        elsif scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == Integer
+          scope = scope.where("#{filter}" => q[filter].try(:to_i))
         elsif scope.klass.fields.keys.include? filter and scope.klass.fields[filter].type == String
           scope = scope.where("#{filter}" => /#{q[filter]}/i)
         elsif (filter == 'id') and (q[filter].blank? == false)
