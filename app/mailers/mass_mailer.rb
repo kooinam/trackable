@@ -16,7 +16,7 @@ class MassMailer < ActionMailer::Base
       encoding: 'base64',
     }
 
-    mail(to: email, subject: subject, from: SettingsManager.singleton.sender_email, bcc: SettingsManager.singleton.bcc_email)
+    mail(to: email, subject: subject, from: NotificationManager.singleton.sender_email, bcc: NotificationManager.singleton.bcc_email)
   end
 
   def import(success, email, params)
@@ -30,6 +30,6 @@ class MassMailer < ActionMailer::Base
       subject = 'Failed to Import'
     end
 
-    mail(to: email, subject: subject, from: SettingsManager.singleton.sender_email, bcc: SettingsManager.singleton.bcc_email)
+    mail(to: email, subject: subject, from: NotificationManager.singleton.sender_email, bcc: NotificationManager.singleton.bcc_email)
   end
 end
