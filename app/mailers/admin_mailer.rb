@@ -2,7 +2,7 @@ class AdminMailer < ApplicationMailer
   def resultable_error(resultable)
     @resultable = resultable
 
-    broadcast_profile = RedisBroadcastProfile.sidekiq
+    broadcast_profile = Rails.application.sidekiq_profile
 
     subject = "#{Rails.application.class.name} #{broadcast_profile.namespace}: Resultable Error - #{@resultable.message}"
 
