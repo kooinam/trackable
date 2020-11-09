@@ -2,9 +2,16 @@ class RedisLock
   extend ActiveSupport::Concern
 
   def self.get_instance
-    redis = Redis.new(url: Rails.application.secrets.redis_url, password: Rails.application.secrets.redis_password, timeout: 5)
+    broadcast_profile = RedisBroadcastProfile.sidekiq
 
-    nsp = Redis::Namespace.new(Rails.application.secrets.redis_namespace, redis: redis)
+    redis = Redis.new(
+      url: broadcast_profile.url, 
+      password: broadcast_profile.password, 
+      port: broadcast_profile.port,
+      timeout: broadcast_profile.timeout
+    )
+
+    nsp = Redis::Namespace.new(broadcast_profile.namespace, redis: redis)
 
     nsp
   end
