@@ -2,7 +2,7 @@ class RedisLock
   extend ActiveSupport::Concern
 
   def self.get_instance
-    broadcast_profile = Rails.application.sidekiq_profile
+    broadcast_profile = RedisBroadcastProfile.redis_instance
 
     redis = Redis.new(
       url: broadcast_profile.url, 
