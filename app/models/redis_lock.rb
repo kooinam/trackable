@@ -2,7 +2,7 @@ class RedisLock
   extend ActiveSupport::Concern
 
   def self.get_instance
-    broadcast_profile = RedisBroadcastProfile.redis_instance
+    broadcast_profile = RedisProfile.redis_instance
 
     redis = Redis.new(
       url: broadcast_profile.url, 
