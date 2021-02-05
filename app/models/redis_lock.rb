@@ -23,7 +23,7 @@ class RedisLock
   end
 
   def self.lock(key, lock: true, expire: 10, timeout: nil)
-    redis_lock = RedisLock.new(key, expire, timeout)
+    redis_lock = RedisLock.new(key, expire: expire, timeout: timeout)
     response = false
 
     if lock
