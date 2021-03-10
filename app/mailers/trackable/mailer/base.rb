@@ -8,6 +8,10 @@ module Trackable
           block.call(mailer_config)
         end
 
+        def setup_with_config(mailer_config)
+          @@mailer_config = mailer_config
+        end
+
         def mailer_config
           @@mailer_config ||= Trackable::Mailer::Config.new
         end
