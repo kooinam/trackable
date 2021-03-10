@@ -8,7 +8,7 @@ module Trackable::Mass
 
         params = block.call(items)
 
-        MassMailer.export(user_email, params).deliver
+        Trackable::Mailer::Mass.export(user_email, params).deliver
       end
     end
 
@@ -61,7 +61,7 @@ module Trackable::Mass
           #   records: self.name.humanize,
           # }, recipients: recipients)
 
-          MassMailer.import(true, user_email, params).deliver
+          Trackable::Mailer::Mass.import(true, user_email, params).deliver
         rescue Exception => e
           # Trackable::Activity.track('import_records_error', extras: {
           #   attachment_id: attachment_id,
@@ -78,8 +78,7 @@ module Trackable::Mass
           pp e.backtrace
           pp '---'
 
-          MassMailer.import(false, user_email, params).deliver
-          AdminMailer.sidekiq_error(e).deliver
+          Trackable::Mailer::Mass.import(false, user_email, params).deliver
         end
       end
     end
