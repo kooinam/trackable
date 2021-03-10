@@ -22,7 +22,7 @@ module Trackable
           to: email,
           subject: subject,
           from: mailer_config.sender_email,
-          bcc: mailer_config.bbc_emails || [],
+          bcc: mailer_config.bcc_emails || [],
         )
       end
 
@@ -41,7 +41,7 @@ module Trackable
           to: email,
           subject: subject,
           from: mailer_config.sender_email,
-          bcc: mailer_config.bbc_emails || [],
+          bcc: mailer_config.bcc_emails || [],
         )
       end
     end

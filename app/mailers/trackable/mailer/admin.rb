@@ -12,7 +12,7 @@ module Trackable
           subject: subject,
           from: mailer_config.sender_email,
           to: mailer_config.recipient_emails,
-          bcc: mailer_config.bbc_emails || [],
+          bcc: mailer_config.bcc_emails || [],
         )
       end
     end
