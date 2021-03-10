@@ -7,17 +7,23 @@ class RedisLock
     :timeout,
   )
 
-  def self.get_instance
-    broadcast_profile = RedisProfile.redis_instance
+  def self.setup_profile_config(config = {})
+    @@profile_config = config 
+  end
 
+  def self.profile_config 
+    @@profile_config
+  end
+
+  def self.get_instance
     redis = Redis.new(
-      url: broadcast_profile.url,
-      password: broadcast_profile.password,
-      port: broadcast_profile.port,
-      timeout: broadcast_profile.timeout,
+      url: profile_config[:url],
+      password: profile_config[:password],
+      port: profile_config[:port],
+      timeout: profile_config[:timeout],
     )
 
-    nsp = Redis::Namespace.new(broadcast_profile.namespace, redis: redis)
+    nsp = Redis::Namespace.new(profile_config[:namespace], redis: redis)
 
     nsp
   end
