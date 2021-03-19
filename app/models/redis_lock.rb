@@ -8,10 +8,10 @@ class RedisLock
   )
 
   def self.setup_profile_config(config = {})
-    @@profile_config = config 
+    @@profile_config = config
   end
 
-  def self.profile_config 
+  def self.profile_config
     @@profile_config
   end
 
@@ -34,7 +34,7 @@ class RedisLock
 
     if lock
       response = redis_lock.pending_lock()
-    else 
+    else
       response = redis_lock.direct_lock()
     end
 
@@ -67,23 +67,10 @@ class RedisLock
     total_wait_duration = 0
 
     # if the key is exist, keep waiting until it release
-    while redis.setnx(key, expire_in) == false
+    while redis.set(key, expire_in, nx: true, ex: expire) == false
       total_wait_duration += wait_duration
 
       check_timeout(total_wait_duration, start_at)
-
-      value = redis.get(key)
-
-      if value
-        time = try_parse_datetime(value)
-
-        if DateTime.now >= time
-          DevMessage.track("Redis LOCK LOCKED #{key} #{start_at} #{time}", 'REDIS', important: true)
-
-          Rails.logger.error "ALERT REDIS LOCK #{key}"
-          redis.del(key)
-        end
-      end
 
       sleep wait_duration
     end
@@ -103,24 +90,10 @@ class RedisLock
 
     expire_in = DateTime.now + expire.seconds
 
-    if redis.setnx(key, expire_in)
+    if redis.set(key, expire_in, nx: true, ex: expire)
       response = true
     else
-      value = redis.get(key)
-
-      if value
-        time = try_parse_datetime(value)
-
-        if DateTime.now >= time
-          redis.del(key)
-
-          redis.setnx(key, expire_in)
-
-          response = true
-        else
-          response = false
-        end
-      end
+      response = false
     end
 
     response
@@ -134,27 +107,13 @@ class RedisLock
     redis.redis.close
   end
 
-  def close 
+  def close
     redis = self.class.get_instance
 
     redis.redis.close
   end
 
   private
-  def try_parse_datetime(value)
-    time = nil
-    key = self.key
-
-    begin
-      time = DateTime.parse(value)
-    rescue Exception => e
-      time = DateTime.now
-
-      DevMessage.track("Redis LOCK Error #{value} #{key} #{e}", 'REDIS LOCK ERROR', important: true)
-    end
-
-    time
-  end
 
   def check_timeout(total_wait_duration, start_at)
     timeout = self.timeout
