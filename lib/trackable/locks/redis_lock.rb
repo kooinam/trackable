@@ -16,7 +16,7 @@ module Trackable
       end
 
       def self.wait_lock(lock_key, wait: true, lock_expiry: 10, lock_timeout:nil, &block)
-        lock = Locks::RedisLock.new(lock_key, lock_expiry: lock_expiry, lock_timeout: lock_timeout)
+        lock = Trackable::Locks::RedisLock.new(lock_key, lock_expiry: lock_expiry, lock_timeout: lock_timeout)
         lock_value = lock.acquire_lock(wait)
 
         if lock_value
@@ -25,6 +25,12 @@ module Trackable
 
         lock.release_lock(lock_value)
         lock.close
+      end
+
+      def self.lock(lock_key, wait: true, lock_expiry: 10, lock_timeout:nil)
+        lock = Trackable::Locks::RedisLock.new(lock_key, lock_expiry: lock_expiry, lock_timeout: lock_timeout)
+        
+        lock.acquire_lock(wait)
       end
 
       def initialize(lock_key, lock_expiry: 10, lock_timeout: nil)
@@ -57,19 +63,18 @@ module Trackable
         lock_value = SecureRandom.hex
 
         if wait
-          wait_duration = 0.1
+          wait_duration = 0.01
           total_wait_duration = 0
 
           # if the key is exist, keep waiting until it release
-          while self.redis.set(self.lock_key, lock_value, nx: true, ex: self.lock_expiry) == false
+          while redis.set(self.lock_key, lock_value, nx: true, ex: self.lock_expiry) == false
             total_wait_duration += wait_duration
-
             check_timeout(total_wait_duration)
 
             sleep wait_duration
           end
         else
-          acquired = redis.set(self.lock_key, lock_value, nx: true, ex: expire)
+          acquired = redis.set(self.lock_key, lock_value, nx: true, ex: self.lock_expiry)
 
           if !acquired
             lock_value = nil
